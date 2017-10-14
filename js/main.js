@@ -16,6 +16,31 @@ function distance(lat1, long1, lat2, long2) {
   return 6378137*c
 }
 
+function wayPointRoutes(sensors, rutes) {
+  let wayPoints = []
+  for(let j = 0; j < rutes[i].length; j++) {
+    const currentlat = parseFloat(rutes[i][j].lat())
+    const currentlong = parseFloat(rutes[i][j].lng())
+    let closest = NEIGHBOUR_DISTANCE_THRESHOLD
+    let maxval = 0
+    let maxlat = currentlat
+    let maxlong = currentlong
+    for(let k = 0; k< sensors.length; k++) { 
+      const auxlat = parseFloat(sensors[k].lat)
+      const auxlong = parseFloat(sensors[k].lng)
+      const auxval = parseFloat(sensors[k].value)
+      const distancia = distance(currentlat, currentlong, auxlat, auxlong)
+      if(distancia < NEIGHBOUR_DISTANCE_THRESHOLD && auxval > maxval) {
+        maxval = auxval
+        maxlat = auxlat
+        maxlong = auxlong
+      }
+    }
+    wayPoints.push({lat: parseFloat(maxlat),lng: parseFloat(maxlong)})
+  }
+  return wayPoints
+}
+
 function valueRoutes(sensors, rutes) {
   let lux = []
   for(let i = 0; i < rutes.length; i++){
