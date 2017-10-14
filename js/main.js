@@ -1,5 +1,53 @@
 const BROKER_URL = 'http://api.thingtia.cloud/data/myProvider1'
 const IDENTITY_KEY = 'c61a6bfe99345f8912c455c9f80f04221fdfb9f094619063518481404564ae77'
+const NEIGHBOUR_DISTANCE_THRESHOLD = 100;
+
+function distance(lat1, long1, lat2, long2) {
+  lat1 = lat1*(Math.PI)*(1.0/180.0)
+  lat2 = lat2*(Math.PI)*(1.0/180.0)
+  long1 = long1*(Math.PI)*(1.0/180.0)
+  long2 = long2*(Math.PI)*(1.0/180.0)
+  varlat = lat2 - lat1
+  varlong = long2 - long1
+  b = Math.sin(varlong/2)
+  d = Math.sin(varlat/2)
+  a = d*d+Math.cos(lat1)*Math.cos(lat2)*b*b
+  c = 2*Math.atan2(Math.sqrt(a), Math.sqrt(1-a))
+  return 6378137*c
+}
+
+function valueRoutes(sensors, rutes) {
+  let lux = []
+  for(let i = 0; i < rutes.length; i++){
+    let amountlux = 0
+    let numberlux = 0
+    for(let j = 0; j < rutes[i].length; j++) {
+      const currentlat = rutes[i][j].lat()
+      const currentlong = rutes[i][j].lng()
+      let closest = NEIGHBOUR_DISTANCE_THRESHOLD
+      let closestval = 0
+      for(let k = 0; k< sensors.length; k++) {
+        const auxlat = sensors[k].lat
+        const auxlong = sensors[k].lng
+        const auxval = sensors[k].value
+        const distancia = distance(currentlat, currentlong, auxlat, auxlong)
+        if(distancia < NEIGHBOUR_DISTANCE_THRESHOLD && distancia < closest) {
+          closest = distancia
+          closestval = auxval
+        }
+      }
+      if(closest < NEIGHBOUR_DISTANCE_THRESHOLD){
+        numberlux++
+        amountlux += closestval
+      }
+    }
+    if (numberlux > 0) lux.push(amountlux/numberlux)
+    else lux.push(0)
+      
+  }
+  return lux;
+}
+
 
 function displayRoute() {
   directionsService.route({
@@ -7,7 +55,7 @@ function displayRoute() {
     destination: new google.maps.LatLng(41.385321, 2.173234),
     travelMode: 'WALKING',
     provideRouteAlternatives: true,
-  }, function(response, status) { console.log(response)
+  }, function(response, status) {
     if (status === 'OK') {
       directionsDisplay.setDirections(response);
     } else {
@@ -25,9 +73,10 @@ function displaySensors() {
       useLocalExtrema: true
     })
   }
+  
   heatmap.setData({
     max: 8,
-    data: genData()
+    data: sensorData
   })
 }
 
@@ -90,5 +139,22 @@ function getSensorValueRequest() {
   })
 }
 
-displayRoute()
-displaySensors()
+function display() {
+  sensorData = genData()
+  displaySensors()
+  displayRoute()
+}
+
+function recomputeBestRoute() {
+  if (directionsDisplay && directionsDisplay.getDirections()) {
+    const routes_points = directionsDisplay.getDirections()
+      .routes.map(function (r) {
+        return r.overview_path
+      })
+      console.log(routes_points)
+    const valuation = valueRoutes(sensorData, routes_points)
+    console.log(valuation)  
+  }
+}
+
+display()
