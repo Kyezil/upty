@@ -108,7 +108,8 @@ function genData() {
 function getSensorData() {
   $.when(getSensorLocationRequest(), getSensorValueRequest()).done(function (sloc, sval) {
     if (sloc[1] === 'success' && sval[1] === 'success') {
-      console.log(sloc[0].providers[0].sensors, sloc[1].sensors)
+      console.log('locations: ', sloc[0].providers[0].sensors)
+      console.log('values: ', sloc[1].sensors)
     } else {
       console.log('Some sensor data couldn\'t be fetched')
       console.log(sloc, sval)
