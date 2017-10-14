@@ -1,22 +1,30 @@
-
-
 /* ==========================================================================
-   Author's custom styles
-   ========================================================================== */
+Author's custom styles
+========================================================================== */
 
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+#map {
+  height: 100%;
+}
+div#wrapper {
+  margin-top: 50px;
+  height: 100%;
+  width: 100%;
+  position: relative;
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+div#ui {
+  position: absolute;
+  top: 50px;
+  left: 10px;
+  z-index: 100;
+  width: 300px;
+  border-radius: 5px;
+  padding: 10px;
+  background-color: white;
+  height: 100px;
+}
