@@ -57,16 +57,37 @@ function genData() {
 }
 
 function getSensorData() {
-  const xmlHttp = new XMLHttpRequest()
-  xmlHttp.onreadystatechange = function() { 
-    if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
-      if (xmlHttp.responseText != undefined) {
-        sensorData = parseSensorData(xmlHttp.responseText)
+  $.when(getSensorLocationRequest(), getSensorValueRequest()).done(function (sloc, sval) {
+    if (sloc[1] === 'success' && sval[1] === 'success') {
+      console.log(sloc[0].providers[0].sensors, sloc[1].sensors)
+    } else {
+      console.log('Some sensor data couldn\'t be fetched')
+      console.log(sloc, sval)
+    }
+  })
+}
+
+
+function getSensorLocationRequest() {
+  return $.ajax({
+    dataType: "json",
+    url: 'http://api.thingtia.cloud/catalog/',
+    type: 'GET',
+    beforeSend: function(xhr) {
+        xhr.setRequestHeader('IDENTITY_KEY', IDENTITY_KEY)
       }
-  }
-  xmlHttp.open('GET', BROKER_URL, true)
-  xmlHttp.setRequestHeader('IDENTITY_KEY', IDENTITY_KEY)
-  xmlHttp.send(null);
+  })
+}
+
+function getSensorValueRequest() {
+  return $.ajax({
+    dataType: "json",
+    url: 'http://api.thingtia.cloud/data/myProvider1',
+    type: 'GET',
+    beforeSend: function(xhr) {
+        xhr.setRequestHeader('IDENTITY_KEY', IDENTITY_KEY)
+      }
+  })
 }
 
 displayRoute()
