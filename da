@@ -1,0 +1,13 @@
+[1mdiff --git a/index.html b/index.html[m
+[1mindex d61228a..6a8918b 100644[m
+[1m--- a/index.html[m
+[1m+++ b/index.html[m
+[36m@@ -7,7 +7,7 @@[m
+     <meta name="description" content="">[m
+     <meta name="viewport" content="width=device-width, initial-scale=1">[m
+     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">[m
+[31m-    <link rel="stylesheet" href="css/bootstrap.min.css">[m
+[32m+[m[32m    <link rel="stylesheet" hr0ef="css/bootstrap.min.css">[m
+     <link rel="stylesheet" href="css/bootstrap-theme.min.css">[m
+     <link rel="stylesheet" href="css/main.css">[m
+     <script src="js/vendor/modernizr-2.8.3.min.js"></script>[m
