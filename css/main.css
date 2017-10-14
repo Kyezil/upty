@@ -4,26 +4,33 @@ Author's custom styles
 
 html, body {
   height: 100%;
+  width: 100%;
   margin: 0;
   padding: 0;
 }
-#map {
-  height: 100%;
-}
-div#wrapper {
-  margin-top: 50px;
-  height: 100%;
-  width: 100%;
-  position: relative;
+
+#wrapper {
+  display: flex;
+  flex-flow: column;
+  min-height: 100%;
 }
 
-div#ui {
+#wrapper nav.navbar {
+  flex: 0 1 50px;
+}
+
+#ui {
   position: absolute;
-  top: 80px;
-  left: 10px;
+  top: 50px;
   max-width: 500px;
   z-index: 100;
   border-radius: 5px;
   padding: 10px;
   background-color: white;
+}
+
+#map {
+  top: 50px;
+  flex: 1;
+  height: 100%;
 }

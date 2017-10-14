@@ -108,12 +108,43 @@ function genData() {
 function getSensorData() {
   $.when(getSensorLocationRequest(), getSensorValueRequest()).done(function (sloc, sval) {
     if (sloc[1] === 'success' && sval[1] === 'success') {
-      console.log(sloc[0].providers[0].sensors, sloc[1].sensors)
+      console.log('locations: ', sloc[0].providers[0].sensors)
+      console.log('values: ', sval[0].sensors)
+      const cjt_sensors = getSensorInfo(sloc[0].providers[0].sensors, sval[0].sensors)
+      console.log(cjt_sensors)
+      
     } else {
       console.log('Some sensor data couldn\'t be fetched')
       console.log(sloc, sval)
     }
   })
+}
+
+function getSensorInfo (latlong, values) {
+  function cmp(a, b) {
+    return a.sensor - b.sensor;
+  }
+  latlong.sort(cmp);
+  values.sort(cmp);
+  conjuntsensors = [];
+  let i = 0;
+  let j = 0;
+  while(i < latlong.length && j < values.length){
+    latlongid = latlong[i].sensor;
+    valuesid = values[j].sensor;
+    if(latlongid < valuesid) i++;
+    else if (latlongid > valuesid) j++;
+    else {
+      let rabbit = latlong[i].location.split(" ");
+      conjuntsensors.push({
+        lat: parseFloat(rabbit[0]),
+        lng: parseFloat(rabbit[1]),
+        value: parseFloat(values[j].observations[0].value)
+      });
+      i++; j++;
+    }
+  }
+  return conjuntsensors;
 }
 
 
