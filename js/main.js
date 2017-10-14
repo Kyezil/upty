@@ -49,11 +49,11 @@ function valueRoutes(sensors, rutes) {
 }
 
 
-function displayRoute() {
+function displayRoute(origin, destination, travelMode) {
   directionsService.route({
-    origin: new google.maps.LatLng(41.377118, 2.171646),
-    destination: new google.maps.LatLng(41.385321, 2.173234),
-    travelMode: 'WALKING',
+    origin: origin,
+    destination: destination,
+    travelMode: travelMode,
     provideRouteAlternatives: true,
   }, function(response, status) {
     if (status === 'OK') {
@@ -105,13 +105,13 @@ function genData() {
   return res
 }
 
-function getSensorData() {
+function getSensorData(callback) {
   $.when(getSensorLocationRequest(), getSensorValueRequest()).done(function (sloc, sval) {
     if (sloc[1] === 'success' && sval[1] === 'success') {
       console.log('locations: ', sloc[0].providers[0].sensors)
       console.log('values: ', sval[0].sensors)
       const cjt_sensors = getSensorInfo(sloc[0].providers[0].sensors, sval[0].sensors)
-      console.log(cjt_sensors)
+      callback(cjt_sensors)
     } else {
       console.log('Some sensor data couldn\'t be fetched')
       console.log(sloc, sval)
@@ -170,9 +170,11 @@ function getSensorValueRequest() {
 }
 
 function display() {
-  sensorData = genData()
-  displaySensors()
-  displayRoute()
+  getSensorData(function(data) {
+    sensorData = data
+    displaySensors()
+  }) // sets sensorData
+  //displayRoute()
 }
 
 function recomputeBestRoute() {
@@ -185,6 +187,10 @@ function recomputeBestRoute() {
     const valuation = valueRoutes(sensorData, routes_points)
     console.log(valuation)  
   }
+}
+
+function search() {
+  alert('hello')
 }
 
 display()
