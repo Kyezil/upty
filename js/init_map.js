@@ -32,7 +32,6 @@ function initMap() {
   
   // auto complete input
   const originInput = document.getElementById('maps-origin')
-  
   const originAuto = new google.maps.places.Autocomplete(originInput)
   originAuto.bindTo('bounds', map)
   
