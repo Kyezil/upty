@@ -1,4 +1,5 @@
 <!doctype html>
+
 <html class="no-js" lang="">
     <head>
         <meta charset="utf-8">
@@ -6,7 +7,7 @@
         <title></title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
         <link rel="stylesheet" href="css/bootstrap.min.css">
         <link rel="stylesheet" href="css/bootstrap-theme.min.css">
         <link rel="stylesheet" href="css/main.css">
@@ -30,9 +31,32 @@
     <div id="wrapper">
       
       <div id="ui">
-        <p>This is some useless content</p>
+	<div class="btn-group btn-group-justified" role="group" aria-label="...">
+	  <div class="btn-group" role="group">
+	    <button type="button" class="btn btn-default"><i class="material-icons">directions_walk</i></button>
+	  </div>
+	  <div class="btn-group" role="group">
+	    <button type="button" class="btn btn-default"><i class="material-icons">directions_car</i></button>
+	  </div>
+	</div>
+        <div class="input-group">
+        <span class="input-group-addon" id="basic-addon1"> Origin </span>
+	  <input type="text" class="form-control" id="origin" placeholder="Origin...">
+	  <span class="input-group-btn">
+	    <button class="btn btn-default" type="button">
+	    <span class="glyphicon glyphicon-search"></span>
+	  </span>
+	</div>
+        <div class="input-group">
+        <span class="input-group-addon" id="basic-addon1"> Destination </span>
+	  <input type="text" class="form-control" id="origin" placeholder="Destination...">
+	  <span class="input-group-btn">
+	    <button class="btn btn-default" type="button">
+	    <span class="glyphicon glyphicon-search"></span>
+	  </span>
+	</div>
+	<button type="button" class="btn btn-default"><i class="material-icons">directions</i></button>
       </div>
-      
       <div id="map"></div>
     </div>
     
