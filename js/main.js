@@ -109,14 +109,9 @@ function getSensorData() {
   $.when(getSensorLocationRequest(), getSensorValueRequest()).done(function (sloc, sval) {
     if (sloc[1] === 'success' && sval[1] === 'success') {
       console.log('locations: ', sloc[0].providers[0].sensors)
-<<<<<<< HEAD
       console.log('values: ', sval[0].sensors)
       const cjt_sensors = getSensorInfo(sloc[0].providers[0].sensors, sval[0].sensors)
       console.log(cjt_sensors)
-      
-=======
-      console.log('values: ', sloc[1].sensors)
->>>>>>> 163a76980e44d5a59627999291599667b97128a6
     } else {
       console.log('Some sensor data couldn\'t be fetched')
       console.log(sloc, sval)
