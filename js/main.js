@@ -130,12 +130,23 @@ function genData() {
   return res
 }
 
-function getSensorData(callback) {
+function getSensorData(callback, Sensortype) {
   $.when(getSensorLocationRequest(), getSensorValueRequest()).done(function (sloc, sval) {
     if (sloc[1] === 'success' && sval[1] === 'success') {
       console.log('locations: ', sloc[0].providers[0].sensors)
       console.log('values: ', sval[0].sensors)
-      const cjt_sensors = getSensorInfo(sloc[0].providers[0].sensors, sval[0].sensors)
+      let seleccioLocs = []
+      let seleccioVals = []
+      
+      for(i = 0; i < sloc[0].providers[0].sensors.length; ++i){
+        if(sloc[0].providers[0].sensors[i].type === Sensortype){
+          seleccioLocs.push(sloc[0].providers[0].sensors[i]) 
+          seleccioVals.push(sval[0].sensors[i])
+        }
+      }
+      console.log('locations: ', seleccioLocs)
+      console.log('values: ', seleccioVals)
+      const cjt_sensors = getSensorInfo(seleccioLocs, seleccioVals)
       callback(cjt_sensors)
     } else {
       console.log('Some sensor data couldn\'t be fetched')
@@ -145,33 +156,23 @@ function getSensorData(callback) {
 }
 
 function getSensorInfo (latlong, values) {
-  function cmp(a, b) {
-    return a.sensor - b.sensor;
-  }
-  latlong.sort(cmp);
-  values.sort(cmp);
   conjuntsensors = [];
-  let i = 0;
-  let j = 0;
-  while(i < latlong.length && j < values.length){
-    latlongid = latlong[i].sensor;
-    valuesid = values[j].sensor;
-    if(latlongid < valuesid) i++;
-    else if (latlongid > valuesid) j++;
-    else {
-      let rabbit = latlong[i].location.split(" ");
-      conjuntsensors.push({
-        lat: parseFloat(rabbit[0]),
-        lng: parseFloat(rabbit[1]),
-        value: parseFloat(values[j].observations[0].value)
-      });
-      i++; j++;
+  for(let i = 0; i<latlong.length; i++){
+    for(let j = 0; j <values.length; ++j){
+      if(latlong[i].sensor === values[j].sensor){
+        let rabbit = latlong[i].location.split(" ");
+        conjuntsensors.push({
+          lat: parseFloat(rabbit[0]),
+          lng: parseFloat(rabbit[1]),
+          value: parseFloat(values[j].observations[0].value)
+        });
+      }
+
     }
   }
   return conjuntsensors;
 }
-
-
+ 
 function getSensorLocationRequest() {
   return $.ajax({
     dataType: "json",
@@ -194,11 +195,11 @@ function getSensorValueRequest() {
   })
 }
 
-function display() {
+function display(Sensortype) {
   getSensorData(function(data) {
     sensorData = data
     displaySensors()
-  }) // sets sensorData
+  }, Sensortype) // sets sensorData
   //displayRoute()
 }
 
