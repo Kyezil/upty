@@ -1,6 +1,7 @@
 const BROKER_URL = 'http://api.thingtia.cloud/data/myProvider1'
 const IDENTITY_KEY = 'c61a6bfe99345f8912c455c9f80f04221fdfb9f094619063518481404564ae77'
 const NEIGHBOUR_DISTANCE_THRESHOLD = 140;
+const THRESHOLD_POLUTION = 95;
 
 function distance(lat1, long1, lat2, long2) {
   lat1 = lat1*(Math.PI)*(1.0/180.0)
@@ -219,6 +220,29 @@ function recomputeBestRoute() {
     const valuation = valueRoutes(sensorData, routes_points)
     console.log(valuation)  
   }
+}
+
+
+function exceedsThreshold(pollutionsensors, coordinates){
+  for(let i = 0; i<coordinates.length; i++){
+    let distclosest = 300;
+    let pollution = 0;
+    let latcoord = coordinates[i].lan();
+    let longcoord = coordinates[i].long();
+    for(let j = 0; j<pollutionsensors.length; j++){
+      let latsensor = pollutionsensors[j].lat;
+      let longsensor = pollutionsensors[j].lng;
+      let valuesensor = pollutionsensors[j].val;
+      if(distancia(latcoord, longcoord, latsensor, longsensor) < distclosest){
+	disclosest = distancia(latcoord, longcoord, latsensor, longsensor);
+	pollution = valuesensor;
+      }
+    }
+    if(Math.abs(pollution)>THRESHOLD_POLUTION){
+      return true;
+    }
+  }
+  return false;
 }
 
 
