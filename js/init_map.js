@@ -98,6 +98,30 @@ class UIControlCenter {
     bounds.extend(this.destinationMarker.position)
     map.fitBounds(bounds)
   }
+  setLocalPosition(type) {
+    if (navigator.geolocation) {
+      const that = this
+      navigator.geolocation.getCurrentPosition(function(position) {
+        const place = {
+          icon: 'https://cdn0.iconfinder.com/data/icons/map-3/1024/location-128.png',
+          geometry: {
+            location: {
+              lat: position.coords.latitude,
+              lng: position.coords.longitude
+            }
+          }
+        }
+        if (type === 'origin') {
+          $('#maps-origin').val('My location')
+          that.changeOrigin(place)
+        }
+        else {
+          $('#maps-destination').val('My location')
+          that.changeDestination(place)
+        }
+      });
+    }
+  }
   changeOrigin(place) {
     this.originPlace = place
     this.originMarker.setVisible(false)
