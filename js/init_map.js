@@ -5,6 +5,10 @@ let heatmap
 let directionsService
 let directionsDisplay
 
+let UIControl
+
+const WAYPOINTS_CONSIDERED = 5
+
 function initMap() {
   const BCN_LOC = new google.maps.LatLng(41.390205, 2.154007)
   map = new google.maps.Map(document.getElementById('map'), {
@@ -30,74 +34,53 @@ function initMap() {
   })
   directionsDisplay.setMap(map);
   
+  UIControl = new UIControlCenter()
+  
   // auto complete input
   const originInput = document.getElementById('maps-origin')
   const originAuto = new google.maps.places.Autocomplete(originInput)
   originAuto.bindTo('bounds', map)
   
-  const infoWindowOrigin = new google.maps.InfoWindow()
-  const originMarker = new google.maps.Marker({
-    map: map,
-    anchorPoint: new google.maps.Point(0, -29)
+  originAuto.addListener('place_changed', function() {
+    UIControl.changeOrigin(originAuto.getPlace())
   })
   
-  originAuto.addListener('place_changed', function() {
-    infoWindowOrigin.close()
-    originMarker.setVisible(false)
-    const place = originAuto.getPlace()
-    if (!place.geometry) {
-      alert("No details available for input " + place.name)
-      return
-    }
-    // If the place has a geometry, then present it on a map.
-    if (place.geometry.viewport) {
-      map.fitBounds(place.geometry.viewport);
-    } else {
-      map.setCenter(place.geometry.location);
-      map.setZoom(17);  // Why 17? Because it looks good.
-    }
-    originMarker.setIcon(/** @type {google.maps.Icon} */({
+  // auto complete input
+  const destinationInput = document.getElementById('maps-destination')
+  const destinationAuto = new google.maps.places.Autocomplete(destinationInput)
+  destinationAuto.bindTo('bounds', map)
+  destinationAuto.addListener('place_changed', function() {
+    UIControl.changeDestination(destinationAuto.getPlace())
+  })
+}
+
+class UIControlCenter {
+  constructor() {
+    this.originMarker = new google.maps.Marker({
+      map: map,
+      anchorPoint: new google.maps.Point(0, -29)
+    })
+    this.destinationMarker = new google.maps.Marker({
+      map: map,
+      anchorPoint: new google.maps.Point(0, -29)
+    })
+    this.travelMode = 'WALKING'
+    this.preference = 'time'
+    this.originPlace = undefined
+    this.destinationPlace = undefined
+  }
+  placeMarker(place, marker) {
+    marker.setIcon(/** @type {google.maps.Icon} */({
       url: place.icon,
       size: new google.maps.Size(71, 71),
       origin: new google.maps.Point(0, 0),
       anchor: new google.maps.Point(17, 34),
       scaledSize: new google.maps.Size(35, 35)
     }));
-    originMarker.setPosition(place.geometry.location);
-    originMarker.setVisible(true);
-    
-    let address1 = '';
-    if (place.address_components) {
-      address = [
-        (place.address_components[0] && place.address_components[0].short_name || ''),
-        (place.address_components[1] && place.address_components[1].short_name || ''),
-        (place.address_components[2] && place.address_components[2].short_name || '')
-      ].join(' ');
-    }
-    infoWindowOrigin.setContent('<div><strong>' + place.name + '</strong><br>' + address)
-    infoWindowOrigin.open(map, originMarker)
-  })
-  
-  // auto complete input
-  const destinationInput = document.getElementById('maps-destination')
-  
-  const destinationAuto = new google.maps.places.Autocomplete(destinationInput)
-  destinationAuto.bindTo('bounds', map)
-  
-  const infoWindowDestination = new google.maps.InfoWindow()
-  const destinationMarker = new google.maps.Marker({
-    map: map,
-    anchorPoint: new google.maps.Point(0, -29)
-  })
-  
-  destinationAuto.addListener('place_changed', function() {
-    infoWindowDestination.close()
-    destinationMarker.setVisible(false)
-    const place = destinationAuto.getPlace()
-    if (!place.geometry) {
-      alert("No details available for input " + place.name)
-      return
-    }
+    marker.setPosition(place.geometry.location);
+    marker.setVisible(true);
+  }
+  viewOne(place, marker) {
     // If the place has a geometry, then present it on a map.
     if (place.geometry.viewport) {
       map.fitBounds(place.geometry.viewport);
@@ -105,25 +88,82 @@ function initMap() {
       map.setCenter(place.geometry.location);
       map.setZoom(17);  // Why 17? Because it looks good.
     }
-    destinationMarker.setIcon(/** @type {google.maps.Icon} */({
-      url: place.icon,
-      size: new google.maps.Size(71, 71),
-      destination: new google.maps.Point(0, 0),
-      anchor: new google.maps.Point(17, 34),
-      scaledSize: new google.maps.Size(35, 35)
-    }));
-    destinationMarker.setPosition(place.geometry.location);
-    destinationMarker.setVisible(true);
-    
-    let address2 = '';
-    if (place.address_components) {
-      address = [
-        (place.address_components[0] && place.address_components[0].short_name || ''),
-        (place.address_components[1] && place.address_components[1].short_name || ''),
-        (place.address_components[2] && place.address_components[2].short_name || '')
-      ].join(' ');
+  }
+  viewTwo() {
+    // create common bounds
+    const bounds = new google.maps.LatLngBounds()
+    bounds.extend(this.originMarker.position)
+    bounds.extend(this.destinationMarker.position)
+    map.fitBounds(bounds)
+  }
+  changeOrigin(place) {
+    this.originPlace = place
+    this.originMarker.setVisible(false)
+    if (!place.geometry) {
+      alert("No details available for input " + place.name)
+      this.originPlace = undefined
+      return
     }
-    infoWindowDestination.setContent('<div><strong>' + place.name + '</strong><br>' + address)
-    infoWindowDestination.open(map, destinationMarker)
-  })
+    this.placeMarker(place, this.originMarker)
+    if (this.destinationPlace == undefined)
+      this.viewOne(this.originPlace, this.originMarker)
+    else
+      this.viewTwo()
+  }
+  changeDestination(place) {
+    this.destinationPlace = place
+    this.destinationMarker.setVisible(false)
+    if (!place.geometry) {
+      alert("No details available for input " + place.name)
+      this.destinationPlace = undefined
+      return
+    }
+    this.placeMarker(place, this.destinationMarker)
+    if (this.originPlace == undefined)
+      this.viewOne(this.destinationPlace, this.destinationMarker)
+    else
+      this.viewTwo()
+  }
+  changeTravelMode(button) {
+    this.travelMode = button.getAttribute('data-mode')
+    // change css clases
+    $(button).closest('#travelModeChoice').find('button').removeClass('active')
+    $(button).addClass('active')
+  }
+  changePreference(select) {
+    this.preference = select.value
+  }
+  search() {
+    const preference = this.preference
+    const origin = this.originPlace.geometry.location
+    const destin = this.destinationPlace.geometry.location
+    const travel = this.travelMode
+    computeRoute(origin, destin, travel)
+      .then(function (dirResults) {
+        if (preference === 'time')
+          directionsDisplay.setDirections(dirResults);
+        else {
+          // generate waypoints
+          const waypoints = wayPointRoutes(sensorData, dirResults.routes[0].overview_path)
+          const routes = waypoints.slice(0, WAYPOINTS_CONSIDERED).map(function f(point) {
+            return computeRoute(origin, destin, travel, false, [{
+              location: point,
+              stopover: false
+            }])
+          })
+          Promise.all(routes).then(function (values) {
+            const goodRoutes = values.filter(function f(r) {
+              return r.status === 'OK'
+            })
+            const valuation = valueRoutes(sensorData, goodRoutes.map(function(r) { return r.routes[0].overview_path}))
+            console.log(valuation)
+            const maxIndex = valuation.reduce((iMax, x, i, arr) => x > arr[iMax] ? i : iMax, 0)
+            const bestRoute = goodRoutes[maxIndex]
+            directionsDisplay.setDirections(bestRoute)
+          })
+        }
+      }, function (status) {
+        window.alert('Directions request failed due to ' + status);
+     })
+  }
 }

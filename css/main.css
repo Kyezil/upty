@@ -9,9 +9,6 @@ html, body {
   padding: 0;
 }
 
-#wrapper {
-}
-
 #wrapper nav.navbar {
   height: 50px;
   width: 100%;
@@ -20,7 +17,7 @@ html, body {
 #ui {
   position: absolute;
   top: 50px;
-  max-width: 500px;
+  max-width: 400px;
   z-index: 100;
   border-radius: 5px;
   padding: 10px;
@@ -30,4 +27,8 @@ html, body {
 #map {
   height: 100%;
   width: 100%
+}
+
+#travelModeChoice button {
+  outline: none;
 }

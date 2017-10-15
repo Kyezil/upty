@@ -27,16 +27,16 @@
     </div>
   </nav>
   <div id="wrapper">
-    <div id="ui" style="max-width: 400px;">
-      <div class="form-group btn-group btn-group-justified" role="group" aria-label="...">
+    <div id="ui">
+      <div id="travelModeChoice" class="form-group btn-group btn-group-justified" role="group" aria-label="...">
         <div class="btn-group" role="group">
-          <button type="button" class="btn btn-default" title="Walking route"><i class="material-icons">directions_walk</i></button>
+          <button data-mode="WALKING" onclick="UIControl.changeTravelMode(this)" type="button" class="active btn btn-default" title="Walking route"><i class="material-icons">directions_walk</i></button>
         </div>
         <div class="btn-group" role="group">
-          <button type="button" class="btn btn-default" title="Route by car"><i class="material-icons">directions_car</i></button>
+          <button data-mode="DRIVING" onclick="UIControl.changeTravelMode(this)" type="button" class="btn btn-default" title="Route by car"><i class="material-icons">directions_car</i></button>
         </div>
         <div class="btn-group" role="group">
-          <button type="button" class="btn btn-default" title="Route by bike"><i class="material-icons">directions_bike</i></button>
+          <button data-mode="BICYLING" onclick="UIControl.changeTravelMode(this)" type="button" class="btn btn-default" title="Route by bike"><i class="material-icons">directions_bike</i></button>
         </div>
       </div>
       <div class="form-group">
@@ -47,43 +47,31 @@
         <label for="maps-destination">Destination</label>
         <input type="text" class="form-control" id="maps-destination" placeholder="Destination...">
       </div>
-  <div class="form-group">
-    <label for="exampleFormControlSelect1">Preference</label>
-    <label class="glyphicon glyphicon-question-sign" style="padding-left: 5px" title="Choose what you value most: a quiet walk, seeing vegetation, getting faster to your destination, etc. Then, our algorithm will find the perfect route for you!"></label>
-    <select class="form-control" id="exampleFormControlSelect1">
-      <option>Time (default)</option>
-      <option>Noise</option>
-      <option>Illumination</option>
-      <option>Vegetation</option>
-      <option>Population</option>
-      <option> Contamination </option>
-    </select>
-  </div>
-      <button onclick="search()" type="button" class="btn btn-primary center-block">Directions
+      <div class="form-group">
+        <label for="select-preference">Preference</label>
+        <label class="glyphicon glyphicon-question-sign" style="padding-left: 5px" title="Choose what you value most: a quiet walk, seeing vegetation, getting faster to your destination, etc. Then, our algorithm will find the perfect route for you!"></label>
+        <select onchange="UIControl.changePreference(this)" class="form-control" id="select-preference">
+          <option value="time">Time (default)</option>
+          <option value="noise">Noise</option>
+          <option value="illumination">Illumination</option>
+          <option value="vegetation">Vegetation</option>
+          <option value="population">Population</option>
+          <option value="contamination"> Contamination </option>
+        </select>
+      </div>
+      <button onclick="UIControl.search()" type="button" class="btn btn-primary center-block">Route
         <i class="material-icons" style="vertical-align: middle; padding-left: 5px;">directions</i>
       </button>
       <div class="form-group">
         <label for="maps-overlay">Overlay</label>
         <div class="btn-toolbar" role="toolbar" aria-label="...">
-	  <div class="btn-group" role="group"> 
-	    <button onclick="display('ravioli')" type="button" id="None">None</button>
-	  </div>
-	  <div class="btn-group" role="group">
-	     <button onclick="display('noise')" type="button" id="Noise">Noise</button>
-	  </div>
-	  <div class="btn-group" role="group">
-	     <button onclick="display('luminosity')" type="button" id="Illumination">Illumination</button>
-	  </div>
-	  <div class="btn-group" role="group">
-	     <button onclick="display('rama')" type="button" id="Vegetation">Vegetation</button>
-	  </div>
-	  <div class="btn-group" role="group">
-	     <button onclick="display('presence')" type="button" id="Population">Population</button>
-	  </div>
-	  <div class="btn-group" role="group">
-	     <button onclick="display('air_pollutant')" type="button" id="Contamination">Contamination</button>
-	  </div>
-	</div>
+            <button onclick="display('ravioli')" type="button" id="None">None</button>
+            <button onclick="display('noise')" type="button" id="Noise">Noise</button>
+            <button onclick="display('luminosity')" type="button" id="Illumination">Illumination</button>
+            <button onclick="display('rama')" type="button" id="Vegetation">Vegetation</button>
+            <button onclick="display('presence')" type="button" id="Population">Population</button>
+            <button onclick="display('air_pollutant')" type="button" id="Contamination">Contamination</button>
+        </div>
       </div>
     </div>
   </div>

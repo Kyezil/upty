@@ -1,6 +1,6 @@
 const BROKER_URL = 'http://api.thingtia.cloud/data/myProvider1'
 const IDENTITY_KEY = 'c61a6bfe99345f8912c455c9f80f04221fdfb9f094619063518481404564ae77'
-const NEIGHBOUR_DISTANCE_THRESHOLD = 100;
+const NEIGHBOUR_DISTANCE_THRESHOLD = 140;
 
 function distance(lat1, long1, lat2, long2) {
   lat1 = lat1*(Math.PI)*(1.0/180.0)
@@ -18,17 +18,17 @@ function distance(lat1, long1, lat2, long2) {
 
 function wayPointRoutes(sensors, rutes) {
   let wayPoints = []
-  for(let j = 0; j < rutes[i].length; j++) {
-    const currentlat = parseFloat(rutes[i][j].lat())
-    const currentlong = parseFloat(rutes[i][j].lng())
+  for(let j = 0; j < rutes.length; j++) {
+    const currentlat = rutes[j].lat()
+    const currentlong = rutes[j].lng()
     let closest = NEIGHBOUR_DISTANCE_THRESHOLD
     let maxval = 0
     let maxlat = currentlat
     let maxlong = currentlong
     for(let k = 0; k< sensors.length; k++) { 
-      const auxlat = parseFloat(sensors[k].lat)
-      const auxlong = parseFloat(sensors[k].lng)
-      const auxval = parseFloat(sensors[k].value)
+      const auxlat = sensors[k].lat
+      const auxlong = sensors[k].lng
+      const auxval = sensors[k].value
       const distancia = distance(currentlat, currentlong, auxlat, auxlong)
       if(distancia < NEIGHBOUR_DISTANCE_THRESHOLD && auxval > maxval) {
         maxval = auxval
@@ -36,7 +36,7 @@ function wayPointRoutes(sensors, rutes) {
         maxlong = auxlong
       }
     }
-    wayPoints.push({lat: parseFloat(maxlat),lng: parseFloat(maxlong)})
+    wayPoints.push({lat: maxlat, lng: maxlong})
   }
   return wayPoints
 }
@@ -74,19 +74,20 @@ function valueRoutes(sensors, rutes) {
 }
 
 
-function displayRoute(origin, destination, travelMode) {
-  directionsService.route({
-    origin: origin,
-    destination: destination,
-    travelMode: travelMode,
-    provideRouteAlternatives: true,
-  }, function(response, status) {
-    if (status === 'OK') {
-      directionsDisplay.setDirections(response);
-    } else {
-      window.alert('Directions request failed due to ' + status);
-    }
-  });
+function computeRoute(origin, destination, travelMode, provideRouteAlternatives = false,
+  waypoints = []) {
+  return new Promise(function (resolve, reject) {
+    directionsService.route({
+      origin: origin,
+      destination: destination,
+      travelMode: travelMode,
+      provideRouteAlternatives: provideRouteAlternatives,
+      waypoints: waypoints,
+    }, function(response, status) {
+      if (status === 'OK') resolve(response)
+      else return reject(status)
+    })
+  })
 }
 
 function displaySensors() {
@@ -111,12 +112,12 @@ function parseSensorData(resp) {
 
 function genData() {
   const from = {
-    lat: 41.392101,
-    lon: 2.130498
+    lat: 41.402101,
+    lon: 2.120498
   }
   const to = {
-    lat: 41.359744,
-    lon: 2.171751
+    lat: 41.349744,
+    lon: 2.191751
   }
   const n = 500
   let res = []
@@ -132,7 +133,9 @@ function genData() {
 
 function getSensorData(callback, Sensortype) {
   $.when(getSensorLocationRequest(), getSensorValueRequest()).done(function (sloc, sval) {
-    if (sloc[1] === 'success' && sval[1] === 'success') {
+    if (sloc[1] === 'success' && sval[1] === 'success' && sloc.length > 0 &&
+        sloc[0].hasOwnProperty('providers') && sloc[0].providers.length > 0 &&
+        sval.length > 0) {
       console.log('locations: ', sloc[0].providers[0].sensors)
       console.log('values: ', sval[0].sensors)
       let seleccioLocs = []
@@ -151,14 +154,17 @@ function getSensorData(callback, Sensortype) {
     } else {
       console.log('Some sensor data couldn\'t be fetched')
       console.log(sloc, sval)
+      callback(genData())
     }
   })
 }
 
 function getSensorInfo (latlong, values) {
   conjuntsensors = [];
-  for(let i = 0; i<latlong.length; i++){
-    for(let j = 0; j <values.length; ++j){
+  for(let i = 0; i<latlong.length; i++) {
+    if (!latlong[i] || !latlong[i].hasOwnProperty('sensor')) continue
+    for(let j = 0; j <values.length; ++j) {
+      if (!values[j] || !values[j].hasOwnProperty('sensor')) continue
       if(latlong[i].sensor === values[j].sensor){
         let rabbit = latlong[i].location.split(" ");
         conjuntsensors.push({
@@ -213,10 +219,6 @@ function recomputeBestRoute() {
     const valuation = valueRoutes(sensorData, routes_points)
     console.log(valuation)  
   }
-}
-
-function search() {
-  alert('hello')
 }
 
 display()
