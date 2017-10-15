@@ -1,7 +1,11 @@
 const BROKER_URL = 'http://api.thingtia.cloud/data/myProvider1'
 const IDENTITY_KEY = 'c61a6bfe99345f8912c455c9f80f04221fdfb9f094619063518481404564ae77'
+<<<<<<< HEAD
 const NEIGHBOUR_DISTANCE_THRESHOLD = 140;
 const THRESHOLD_POLUTION = 95;
+=======
+const NEIGHBOUR_DISTANCE_THRESHOLD = 800;
+>>>>>>> 2c4cfa0322cde6ba78b276e586e6a86e930716c7
 
 function distance(lat1, long1, lat2, long2) {
   lat1 = lat1*(Math.PI)*(1.0/180.0)
@@ -134,20 +138,17 @@ function genData() {
 
 function getSensorData(callback, Sensortype) {
   $.when(getSensorLocationRequest(), getSensorValueRequest()).done(function (sloc, sval) {
-    if (sloc[1] === 'success' && sval[1] === 'success' && sloc.length > 0 &&
+    if (false& sloc[1] === 'success' && sval[1] === 'success' && sloc.length > 0 &&
         sloc[0].hasOwnProperty('providers') && sloc[0].providers.length > 0 &&
         sval.length > 0) {
       console.log('locations: ', sloc[0].providers[0].sensors)
       console.log('values: ', sval[0].sensors)
-      let seleccioLocs = []
-      let seleccioVals = []
-      
-      for(i = 0; i < sloc[0].providers[0].sensors.length; ++i){
-        if(sloc[0].providers[0].sensors[i].type === Sensortype){
-          seleccioLocs.push(sloc[0].providers[0].sensors[i]) 
-          seleccioVals.push(sval[0].sensors[i])
-        }
-      }
+      const seleccioLocs = sloc[0].providers[0].filter(function (s) {
+        return s.type === Sensortype
+      })
+      const seleccioVals = sval[0].filter(function (s) {
+        return s.type === Sensortype
+      })
       console.log('locations: ', seleccioLocs)
       console.log('values: ', seleccioVals)
       const cjt_sensors = getSensorInfo(seleccioLocs, seleccioVals)
@@ -222,6 +223,7 @@ function recomputeBestRoute() {
   }
 }
 
+<<<<<<< HEAD
 
 function exceedsThreshold(pollutionsensors, coordinates){
   for(let i = 0; i<coordinates.length; i++){
@@ -247,3 +249,6 @@ function exceedsThreshold(pollutionsensors, coordinates){
 
 
 display()
+=======
+display('noise')
+>>>>>>> 2c4cfa0322cde6ba78b276e586e6a86e930716c7

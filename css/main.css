@@ -32,3 +32,10 @@ html, body {
 #travelModeChoice button {
   outline: none;
 }
+
+#maps-heatmap {
+  position: absolute;
+  top: 60px;
+  right: 10px;
+  z-index: 100;
+}
