@@ -221,5 +221,4 @@ function recomputeBestRoute() {
   }
 }
 
-
-display()
+display('noise')

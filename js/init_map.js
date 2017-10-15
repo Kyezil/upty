@@ -27,11 +27,13 @@ function initMap() {
     streetViewControlOptions: {
       position: google.maps.ControlPosition.RIGHT_BOTTOM
     },
+    fullscreenControl: false
   });
   directionsService = new google.maps.DirectionsService()
   directionsDisplay = new google.maps.DirectionsRenderer({
     hideRouteList: false
   })
+  
   directionsDisplay.setMap(map);
   
   UIControl = new UIControlCenter()

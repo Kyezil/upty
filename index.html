@@ -72,21 +72,21 @@
       <button onclick="UIControl.search()" type="button" class="btn btn-primary center-block">Route
         <i class="material-icons" style="vertical-align: middle; padding-left: 5px;">directions</i>
       </button>
-      <div class="form-group">
-        <label for="maps-overlay">Overlay</label>
-        <div class="btn-toolbar" role="toolbar" aria-label="...">
-            <button onclick="display('ravioli')" type="button" id="None">None</button>
-            <button onclick="display('noise')" type="button" id="Noise">Noise</button>
-            <button onclick="display('luminosity')" type="button" id="Illumination">Illumination</button>
-            <button onclick="display('rama')" type="button" id="Vegetation">Vegetation</button>
-            <button onclick="display('presence')" type="button" id="Population">Population</button>
-            <button onclick="display('air_pollutant')" type="button" id="Contamination">Contamination</button>
-        </div>
-      </div>
     </div>
   </div>
   <div id="map"></div>
   
+  <div id="maps-heatmap" class="form-group">
+    <select class="form-control" onchange="display(this.value)">
+      <option value="ravioli">None</option>
+      <option value="noise" selected>Noise</option>
+      <option value="luminosity">Illumination</option>
+      <option value="rama">Vegetation</option>
+      <option value="presence">Population</option>
+      <option value="air_pollutant">Contamination</option>
+    </select>
+  </div>
+
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
   <script src="js/vendor/bootstrap.min.js"></script>
   <script src="js/init_map.js"></script>
